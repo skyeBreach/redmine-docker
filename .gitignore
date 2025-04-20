@@ -1,8 +1,26 @@
-# Environment Variables
+# ================================================================================================== #
+# Secrets
+
+# Secret Environment Variables
 .env.local
 .env.*.local
 
-# Generated Volumes
-postgresql
-redmine
-redmine-logs
+# Docker Secrets
+.secrets/
+
+
+# ================================================================================================== #
+# Build Data
+
+# Volumes
+docker/
+postgresql/
+/redmine/
+
+# ================================================================================================== #
+# Debugging and Logging
+
+# Log files
+logs/
+
+# ================================================================================================== #
