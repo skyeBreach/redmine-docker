@@ -1,0 +1,8 @@
+# Environment Variables
+.env.local
+.env.*.local
+
+# Generated Volumes
+postgresql
+redmine
+redmine-logs
