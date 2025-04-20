@@ -1,0 +1,51 @@
+name: enet-redmine
+
+x-env: &env
+  env_file:
+    - path: .env
+      required: true
+  environment:
+    - DB_PASS=/run/secrets/db_pass
+    - REDMINE_SECRET_TOKEN=test
+    - SMTP_PASS=password
+    - IMAP_PASS=password
+  secrets:
+    - db_pass
+
+secrets:
+  db_pass:
+    file: ./.secrets/db_pass
+
+services:
+  # Main PostgreSQL Database
+  postgresql:
+    <<: *env
+    image: sameersbn/postgresql:14-20230628
+    volumes:
+      - /srv/redmine/docker/postgresql:/var/lib/postgresql
+    healthcheck:
+      test: "psql -U postgres"
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  redmine:
+    <<: *env
+    build: ./
+    image: sameersbn/redmine:6.0.4-1
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    healthcheck:
+      test: curl -f http://localhost/up || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "${REDMINE_PORT}:8080"
+    volumes:
+      - /srv/redmine/docker/redmine:/home/redmine/data
+      #- /srv/redmine/plugins:/home/redmine/data/plugins
+      #- /srv/redmine/themes:/home/redmine/data/themes
+      - /srv/redmine/docker/redmine-logs:/var/log/redmine
